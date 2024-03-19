@@ -14,13 +14,6 @@ echo "address=/facebook.com/8.8.8.8" | sudo tee -a /etc/dnsmasq.conf
 # Restart dnsmasq service
 sudo systemctl restart dnsmasq
 
-# Verify changes
-echo "Verifying changes..."
-echo "Ping localhost:"
-ping -c 2 localhost
-echo "Ping facebook.com:"
-ping -c 2 facebook.com
-
 # If Docker is not installed, install it
 if ! command -v docker &> /dev/null; then
     echo "Docker not found. Installing Docker..."
@@ -29,5 +22,9 @@ if ! command -v docker &> /dev/null; then
     sudo usermod -aG docker $USER
     rm get-docker.sh
 fi
+
+# Apply changes to hosts file
+echo "127.0.0.2 localhost" | sudo tee /etc/hosts
+echo "8.8.8.8 facebook.com" | sudo tee -a /etc/hosts
 
 echo "Configuration complete."
