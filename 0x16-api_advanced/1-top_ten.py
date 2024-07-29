@@ -1,25 +1,41 @@
 #!/usr/bin/python3
-"""Queries Reddit API and prints the titles of the first 10 hot posts listed"""
+"""Fetches the top 10 hottest posts from a Reddit API endpoint."""
 
-
-import json
 import requests
+import sys
 
 
 def top_ten(subreddit):
+    """Fetches the top 10 hottest posts from a specified subreddit.
+
+    Args:
+        subreddit (str): The subreddit to fetch posts from.
+
+    Returns:
+        None: If an invalid subreddit is provided or if there are no posts.
+        List[str]: The titles of the top 10 hottest posts.
     """
-    Prints the titles of the first 10 hot posts listed for a given subreddit
-    """
-    url = f"https://www.reddit.com/r/{subreddit}/hot.json?limit=10"
-    headers = {"User-Agent": "Python/requests"}
-    response = requests.get(url, headers=headers, allow_redirects=False)
-    if response.status_code != 200:
-        print(None)
-        return
-    data = response.json()
-    if 'error' in data:
-        print(None)
-        return
-    posts = data['data']['children']
-    for post in posts:
-        print(post['data']['title'])
+    url = f"https://www.reddit.com/r/{subreddit}/hot.json"
+    params = {"limit": 10}
+    headers = {'User-Agent': "linux:0x16.api.advanced:v1.0.0 (by /u/bdov_)"}
+
+    # Check if subreddit is provided and is a string
+    if not subreddit or not isinstance(subreddit, str):
+        return None
+
+    try:
+        # Send GET request to Reddit API
+        response = requests.get(url, params=params, headers=headers)
+        response.raise_for_status()
+
+        # Extract data from response
+        data = response.json().get("data")
+        posts = data.get("children")
+
+        # Extract titles of top 10 posts
+        titles = [post.get("data").get("title") for post in posts]
+
+        # Print titles of top 10 posts
+        [print(title) for title in titles]
+    except Exception:
+        return None
